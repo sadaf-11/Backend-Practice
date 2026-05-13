@@ -36,7 +36,7 @@ coverImage:{
 },
 watchHistory:[
    { 
-    type:Schema.Types,ObjectId,
+    type:Schema.Types.ObjectId,
     ref:"Video",
     required:true
 }
