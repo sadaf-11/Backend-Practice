@@ -1,7 +1,7 @@
 // using promise
-const aysncHandler=(asyncHnadler)=>{
+const aysncHandler=(asyncHandler)=>{
     return (req,res,next)=>{
-        Promise.resolve(asyncHnadler(req,res,next))
+        Promise.resolve(asyncHandler(req,res,next))
         .catch((err)=>next(err))
     }
 
