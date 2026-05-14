@@ -104,13 +104,13 @@ const loginUser=asyncHandler(async(req,res)=>{
 //retrun response
 
 
-const {email,username,password}=req.body
-if(!username || !email){
+const {email,username,password}=req.body || {}
+if(!(username || email)){
     throw new ApiError(400,"username or email is required")
 
 }
 const user =await User.findOne({
-    $or:[{username,email}]
+    $or:[{username},{email}]
 })
  if(!user){
     throw new ApiError(404,"user doesnot exists")
@@ -156,7 +156,7 @@ await User.findByIdAndUpdate(
         }
     },
         {
-            new:true
+            returnDocument: "after"
         }
     
 
@@ -173,7 +173,52 @@ return res
 .json(new ApiResponse(200,{},"User Logged Out Succesfully"))
 
 })
+
+const refreshAccessToken=asyncHandler(async(req,res)=>{
+ const incomingRefreshToken=req.cookies?.refreshToken || req.body?.refreshToken
+ if(!incomingRefreshToken){
+    throw new ApiError(401,"unauthorized request")
+ }
+ try {
+    const decodedToken=jwt.verify(
+        incomingRefreshToken,
+        process.env.REFRESH_TOKEN_SECRET
+    )
+    const user= await User.findById(decodedToken?._id)
+    if(!user){
+        throw new ApiError(401,"Invalid refresh token")
+    }
+
+    if(incomingRefreshToken !== user.refreshToken){
+        throw new ApiError(401,"Refresh token is expired or used")
+    }
+     const options={
+        httpOnly:true,
+        secure:true,
+     }
+     const {accessToken,refreshToken}=await generateAccessAndRefreshToken(user._id)
+
+     return res
+     .status(200)
+     .cookie("accessToken",accessToken,options)
+     .cookie("refreshToken",refreshToken,options)
+     .json(
+        new ApiResponse(
+            200,
+            {
+                accessToken,
+                refreshToken
+            },
+            "Access token refreshed"
+        )
+     )
+    } catch (error) {
+       throw new ApiError(401,error?.message || "Invalid refresh Token")
+    }
+    
+})
 export {registerUser,
     loginUser,
-    logoutUser
+    logoutUser,
+    refreshAccessToken
 }
