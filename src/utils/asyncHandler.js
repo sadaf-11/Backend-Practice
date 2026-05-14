@@ -1,5 +1,5 @@
 // using promise
-const aysncHandler=(asyncHandler)=>{
+const asyncHandler=(asyncHandler)=>{
     return (req,res,next)=>{
         Promise.resolve(asyncHandler(req,res,next))
         .catch((err)=>next(err))
@@ -7,7 +7,7 @@ const aysncHandler=(asyncHandler)=>{
 
 }
 
-export default aysncHandler;
+export default asyncHandler;
 
 
 //using try catch
