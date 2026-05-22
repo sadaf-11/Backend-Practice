@@ -17,6 +17,6 @@ owner:{
 
 },{timestamps:true})
 
-commentSchema.plugin(mongooseAggregatePaginate)
+commentSchema.plugin(aggregatePaginate)
 
 export const Comment=mongoose.model("Comment",commentSchema)
