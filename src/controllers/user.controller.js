@@ -151,8 +151,8 @@ const logoutUser=asyncHandler(async(req,res)=>{
 await User.findByIdAndUpdate(
     req.user._id,
     {
-        $set:{
-            refreshToken:undefined
+        $unset:{
+            refreshToken:1
         }
     },
         {
@@ -294,7 +294,7 @@ const updateUserAvatar=asyncHandler(async(req,res)=>{
             }
         },
         {
-            returnDocument:{after}
+            returnDocument:"after"
         }
     ).select("-password")
 
@@ -321,7 +321,7 @@ const updateUserCoverImage=asyncHandler(async(req,res)=>{
             }
         },
         {
-            returnDocument:{after}
+            returnDocument:"after"
         }
     ).select("-password")
 
@@ -332,7 +332,7 @@ const updateUserCoverImage=asyncHandler(async(req,res)=>{
 
 const getUserChannelProfile=asyncHandler(async(req,res)=>{
     const {username}=req.params
-    if(!username?.trim){
+    if(!username?.trim()){
         throw new ApiError(400,"username is missing")
     }
 
@@ -369,7 +369,7 @@ const getUserChannelProfile=asyncHandler(async(req,res)=>{
             isSubscribed:
             {$cond:{
                 if:{
-                    $in:[request.user?._id,"$subscribers.subscriber"]
+                    $in:[req.user?._id,"$subscribers.subscriber"]
                 },
                 then:true,
                 else:false
@@ -382,9 +382,9 @@ const getUserChannelProfile=asyncHandler(async(req,res)=>{
         $project:{
             fullname:1,
             username:1,
-            subscribersCount,
-            channelsSubscribedToCount,
-            isSubscribed,
+            subscribersCount:1,
+            channelsSubscribedToCount:1,
+            isSubscribed:1,
             avatar:1,
             coverImage:1,
             email:1
