@@ -20,11 +20,15 @@ import userRoutes from "./routes/user.routes.js"
 import healthcheckRoute from "./routes/healthcheck.routes.js"
 import tweetRoutes from "./routes/tweet.routes.js"
 import likeRoutes from "./routes/like.routes.js"
+import videoRoutes from "./routes/video.routes.js"
+import commentRoutes from "./routes/comment.routes.js"
 
 //router decleration
 app.use('/api/v1/users',userRoutes)
 app.use('/api/v1/tweets',tweetRoutes)
 app.use('/api/v1/likes',likeRoutes)
+app.use('/api/v1/videos',videoRoutes)
+app.use('/api/v1/comments',commentRoutes)
 app.use('/api/v1/healthcheck',healthcheckRoute)
 
 
