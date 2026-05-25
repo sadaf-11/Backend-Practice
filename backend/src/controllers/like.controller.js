@@ -59,7 +59,7 @@ if (like) {
 })
 
 const toggleCommentLike = asyncHandler(async (req, res) => {
-    const {commentId} = req.params
+    const commentId = req.params.commentId?.trim()
     //TODO: toggle like on comment
      if(!isValidObjectId(commentId))
      {
@@ -159,3 +159,4 @@ export {
     toggleVideoLike,
     getLikedVideos
 }
+

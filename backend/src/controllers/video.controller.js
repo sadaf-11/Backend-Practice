@@ -129,23 +129,24 @@ const getVideoById = asyncHandler(async (req, res) => {
 
 const updateVideo = asyncHandler(async (req, res) => {
     const { videoId } = req.params
-    //TODO: update video details like title, description, thumbnail
+
     if (!isValidObjectId(videoId)) {
         throw new ApiError(400, "Invalid Video Id")
     }
-     const { title, description} = req.body || {}
-    // TODO: get video, upload to cloudinary, create video
-        if (!title?.trim() || !description?.trim()) {
-    throw new ApiError(400, "All fields required")
-    const updateFields={}
-    if(title?.trim()){
-        updateFields.title=title.trim()
+
+    const { title, description } = req.body || {}
+    const updateFields = {}
+
+    if (title?.trim()) {
+        updateFields.title = title.trim()
     }
-    if(description?.trim()){
-        updateFields.description=description.trim()
+
+    if (description?.trim()) {
+        updateFields.description = description.trim()
     }
-    if(req.file?.path)
-const thumbnail = await uploadOnCloudinary(req.file.path)
+
+    if (req.file?.path) {
+        const thumbnail = await uploadOnCloudinary(req.file.path)
 
         if (!thumbnail?.url) {
             throw new ApiError(400, "error while uploading thumbnail")
@@ -153,24 +154,31 @@ const thumbnail = await uploadOnCloudinary(req.file.path)
 
         updateFields.thumbnail = thumbnail.url
     }
-            
-        const updatedVideo=await Video.findByIdAndUpdate(
-            {_id:videoId,
-        owner:req.user?._id},
-            {
-                $set:{
-                   updateFields
-                }
-            },
-            {
-                returnDocument:"after"
-            }
-        )
-    
-        return res
-        .status(200)
-        .json(new ApiResponse(200,updatedVideo,"Video Updated Successfully"))
 
+    if (Object.keys(updateFields).length === 0) {
+        throw new ApiError(400, "At least one field is required")
+    }
+
+    const updatedVideo = await Video.findOneAndUpdate(
+        {
+            _id: videoId,
+            owner: req.user?._id
+        },
+        {
+            $set: updateFields
+        },
+        {
+            returnDocument: "after"
+        }
+    )
+
+    if (!updatedVideo) {
+        throw new ApiError(404, "Video not found or you are not authorized")
+    }
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, updatedVideo, "Video Updated Successfully"))
 })
 
 const deleteVideo = asyncHandler(async (req, res) => {
@@ -243,7 +251,7 @@ const updateVideoFile=asyncHandler(async(req,res)=>{
                  throw new ApiError(400,"error while uploading video")
             }
             
-        const updatedVideo=await Video.findByOneAndUpdate(
+        const updatedVideo=await Video.findOneAndUpdate(
             {_id:videoId,
                 owner: req.user?._id
             },
@@ -275,3 +283,4 @@ export {
     togglePublishStatus,
     updateVideoFile
 }
+

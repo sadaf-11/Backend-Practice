@@ -5,8 +5,8 @@ import { verifyJWT } from "../middlewares/auth.middleware.js";
 
 const router=Router();
 
-router.route("/videos/:tweetId").post(verifyJWT,toggleTweetLike)
-router.route("/tweets/:videoId").post(verifyJWT,toggleVideoLike)
+router.route("/tweets/:tweetId").post(verifyJWT,toggleTweetLike)
+router.route("/videos/:videoId").post(verifyJWT,toggleVideoLike)
 router.route("/comments/:commentId").post(verifyJWT,toggleCommentLike)
 router.route("/users/:userId/videos").get(verifyJWT,getLikedVideos)
 

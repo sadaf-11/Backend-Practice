@@ -17,7 +17,7 @@ const toggleSubscription = asyncHandler(async (req, res) => {
                 throw new ApiError(400,"You cannot subscribe to yourself")
     }
 
-    const channel=await Subscription.findById(channelId).select("_id")
+    const channel=await User.findById(channelId).select("_id")
     if(!channel){
         throw new ApiError(404,"channel not found")
     }
@@ -62,9 +62,9 @@ const getUserChannelSubscribers = asyncHandler(async (req, res) => {
         {
             $lookup:{
                 from:"users",
-                localField:"channel",
+                localField:"subscriber",
                 foreignField:"_id",
-                as:subscriber,
+                as:"subscriber",
                 pipeline:[
                     {
                          $project: {
