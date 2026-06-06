@@ -118,7 +118,16 @@ const getVideoById = asyncHandler(async (req, res) => {
             throw new ApiError(400,"video not found!")
         }
     
-        
+        if (req.user?._id) {
+            await User.findByIdAndUpdate(
+                req.user._id,
+                {
+                    $addToSet: {
+                        watchHistory: video._id,
+                    },
+                }
+            )
+        }
     
         return res
         .status(200)

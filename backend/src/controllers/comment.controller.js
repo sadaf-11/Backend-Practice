@@ -78,10 +78,15 @@ const addComment = asyncHandler(async (req, res) => {
         video: videoId
     })
 
+    const createdComment = await Comment.findById(comment._id).populate(
+        "owner",
+        "fullname username avatar"
+    )
+
     return res
     .status(201)
     .json(
-        new ApiResponse(201, comment, "Comment created Successfully")
+        new ApiResponse(201, createdComment, "Comment created Successfully")
     )
 })
 
@@ -120,6 +125,8 @@ const updateComment = asyncHandler(async (req, res) => {
     if (!updatedComment) {
         throw new ApiError(404, "Comment not found")
     }
+
+    await updatedComment.populate("owner", "fullname username avatar")
 
     return res
     .status(200)

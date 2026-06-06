@@ -117,7 +117,8 @@ const user =await User.findOne({
 
 
  }
-
+console.log(password)
+console.log(user.password)
 const isPasswordValid=await user.isPasswordCorrect(password)
 if(!isPasswordValid){
     throw new ApiError(404,"Invalid User Credentials")
@@ -404,49 +405,24 @@ const getUserChannelProfile=asyncHandler(async(req,res)=>{
 })
 
 const getWatchHistory=asyncHandler(async(req,res)=>{
-    const user=await User.aggregate([
-        {
-            $match:{
-                _id:new mongoose.Types.ObjectId(req.user._id)
+    const user = await User.findById(req.user?._id)
+        .select("watchHistory")
+        .populate({
+            path: "watchHistory",
+            populate: {
+                path: "owner",
+                select: "fullname username avatar"
             }
-        },{
-            $lookup:{
-                from:"videos",
-                localField:"watchHistory",
-                foreignField:"_id",
-                as:"watchHistory",
-                pipeline:[
-                    {
-                        $lookup:{
-                            from:"users",
-                            localField:"owner",
-                            foreignField:"_id",
-                            as:"owner",
-                            pipeline:[
-                                {
-                                    $project:{
-                                        fullname:1,
-                                        username:1,
-                                        avatar:1
-                                    }
-                                },{
-                                   $addFields:{
-                                    owner:{
-                                        $first:"$owner"
-                                    }
-                                   } 
-                                }
-                            ]
-                        }
-                    },
-                ]
-            }
-        }
-    ])
+        })
+
+    if (!user) {
+        throw new ApiError(401, "Unauthorized request")
+    }
+
     return res
     .status(200)
     .json(
-        new ApiResponse(200,watchHistory,"Watch history Fetched Successfully")
+        new ApiResponse(200,user.watchHistory || [],"Watch history Fetched Successfully")
     )
 })
 export {registerUser,

@@ -67,7 +67,7 @@ const authSlice=createSlice({
         })
         .addCase(login.fulfilled,(state,action)=>{
             state.loading=false
-            state.user=action.payload,
+            state.user=action.payload
             state.isAuthenticated=true
         })
         .addCase(login.rejected,(state,action)=>{
@@ -77,28 +77,29 @@ const authSlice=createSlice({
 
         //register
         .addCase(register.pending,(state)=>{
-            state.loading = true,
+            state.loading = true
             state.error = null
         })
-        .addCase(register.fulfilled,(state,action)=>{
+        .addCase(register.fulfilled,(state)=>{
             state.loading = false
         })
         .addCase(register.rejected,(state,action)=>{
-            state.loading = false,
+            state.loading = false
             state.error=action.payload
         })
         //fetchCurrentUser
         .addCase(fetchCurrentUser.fulfilled,(state,action)=>{
-            state.user = action.payload,
+            state.user = action.payload
             state.isAuthenticated = true
         })
         .addCase(fetchCurrentUser.rejected,(state)=>{
-            state.user =null,
+            state.user =null
             state.isAuthenticated = false
+            state.error = null
         })
         //logout
         .addCase(logout.fulfilled,(state)=>{
-            state.user = null,
+            state.user = null
             state.isAuthenticated = false
         })
     }

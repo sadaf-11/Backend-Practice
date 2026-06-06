@@ -14,7 +14,7 @@ export const loginUser=(data)=>{
 }
 
 
-export const logoutUser=(data)=>{
+export const logoutUser=()=>{
     return api.post("/users/logout")
 }
 
