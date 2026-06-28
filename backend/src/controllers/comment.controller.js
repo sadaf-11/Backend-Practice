@@ -41,7 +41,42 @@ const getVideoComments = asyncHandler(async (req, res) => {
                 ]
             }
         },
-        { $unwind: "$owner" }
+        { $unwind: "$owner" },
+        {
+      $lookup: {
+        from: "likes",
+        localField: "_id",
+        foreignField: "comment",
+        as: "likes",
+      },
+    },
+    {
+      $addFields: {
+        likesCount: {
+          $size: "$likes",
+        },
+        isLiked: {
+          $cond: {
+            if: {
+              $in: [req.user?._id || null, "$likes.likedBy"],
+            },
+            then: true,
+            else: false,
+          },
+        },
+      },
+    },
+    {
+      $project: {
+        content: 1,
+        video: 1,
+        owner: 1,
+        createdAt: 1,
+        updatedAt: 1,
+        likesCount: 1,
+        isLiked: 1,
+      },
+    },
     ])
 
     const comments = await Comment.aggregatePaginate(commentsAggregate, {

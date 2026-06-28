@@ -46,6 +46,8 @@ app.use((err, req, res, next) => {
         errors: err.errors || []
     })
 })
-
+app.get("/api/v1/debug-tweets", (req, res) => {
+  res.json({ message: "app is running updated code" })
+})
 
 export default app;

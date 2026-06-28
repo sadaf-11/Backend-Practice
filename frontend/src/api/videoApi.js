@@ -30,3 +30,11 @@ export const deleteVideo = (videoId) => {
 export const togglePublishStatus = (videoId) => {
   return api.get(`/videos/toggle/publish/${videoId}`)
 }
+export const updateVideoFile = (videoId, formData) => {
+  return api.patch(`/videos/update/file/${videoId}`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data"
+    }
+  })
+}
+

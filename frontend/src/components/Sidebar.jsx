@@ -9,14 +9,25 @@ import {
   Gamepad2,
   Trophy,
   Lightbulb,
+  LayoutDashboard,
+  ListVideo,
+  MessageCircle
+
 } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 
-function Sidebar({ isOpen }) {
+function Sidebar({ isOpen, onNavigate }) {
   const navigate = useNavigate()
+
+  const handleClick = (path) => {
+    if (path) {
+      navigate(path)
+      if (onNavigate) onNavigate()  
+    }
+  }
   const menuItems = [
-    { icon: Home, label: "Home" },
-    { icon: Compass, label: "Explore" },
+    { icon: Home, label: "Home",path:"/" },
+    // { icon: Compass, label: "Explore"  },
     { icon: PlaySquare, label: "Subscriptions" , path:"/subscriptions" },
   ]
 
@@ -24,40 +35,36 @@ function Sidebar({ isOpen }) {
   const libraryItems = [
     { icon: Clock, label: "History" ,path:"/history"},
     { icon: PlaySquare, label: "Your videos",path:"/my-videos" },
-    { icon: Clock, label: "Watch later" },
+    { icon: Clock, label: "Watch later", path: "/watch-later" },
     { icon: ThumbsUp, label: "Liked videos" , path:"/liked-videos" },
+    { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
+    { icon: ListVideo, label: "Playlists", path: "/playlists" },
+    { icon: MessageCircle, label: "Tweets", path: "/tweets" },
+
   ]
 
 
-  const exploreItems = [
-    { icon: Flame, label: "Trending" },
-    { icon: Music, label: "Music" },
-    { icon: Gamepad2, label: "Gaming" },
-    { icon: Trophy, label: "Sports" },
-    { icon: Lightbulb, label: "Learning" },
-  ]
+  // const exploreItems = [
+  //   { icon: Flame, label: "Trending" },
+  //   { icon: Music, label: "Music" },
+  //   { icon: Gamepad2, label: "Gaming" },
+  //   { icon: Trophy, label: "Sports" },
+  //   { icon: Lightbulb, label: "Learning" },
+  // ]
 
 
-  const renderItems = (items) => {
-
-    return items.map((item) => (
-
-      <button
-        key={item.label}
-        onClick={()=> item.path && navigate(item.path)}
-        className="w-full flex items-center gap-6 px-6 py-3 hover:bg-gray-100 transition-colors"
-      >
-
-        <item.icon size={24} />
-
-        {isOpen && (
-          <span>{item.label}</span>
-        )}
-
-      </button>
-
-    ))
-  }
+ const renderItems = (items) => {
+  return items.map((item) => (
+    <button
+      key={item.label}
+      onClick={() => handleClick(item.path)}
+      className="w-full flex items-center gap-6 px-6 py-3 hover:bg-gray-100 transition-colors"
+    >
+      <item.icon size={24} />
+      {isOpen && <span>{item.label}</span>}
+    </button>
+  ))
+}
 
 
   return (
@@ -95,7 +102,7 @@ function Sidebar({ isOpen }) {
 
 
 
-          {/* Explore */}
+          {/* Explore
           <div className="border-t border-gray-200 py-2">
 
             <div className="px-6 py-2 text-sm font-semibold text-gray-700">
@@ -106,7 +113,7 @@ function Sidebar({ isOpen }) {
 
             {renderItems(exploreItems)}
 
-          </div>
+          </div> */}
 
         </>
 

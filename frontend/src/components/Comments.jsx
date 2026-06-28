@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { useSelector } from "react-redux"
+import toast from "react-hot-toast"
+import { Trash2, Edit, MessageCircle, Send,ThumbsUp } from "lucide-react"
 import { addVideoComment, getVideoComments,deleteVideoComment,updateVideoComment } from "../api/commentApi.js"
+import { toggleCommentLike } from "../api/likeApi.js"
+
 function Comments({videoId}){
     const navigate=useNavigate()
     const {isAuthenticated,user}=useSelector((state)=>state.auth)
@@ -49,8 +53,7 @@ function Comments({videoId}){
             ])
             setContent("")
         } catch (error) {
-            console.log(error?.response?.data?.message || "Failed to add comment")
-            
+            toast.error(error?.response?.data?.message || "Failed to add comment")            
         }
     }
 
@@ -86,7 +89,8 @@ const handleUpdateComment = async (commentId) => {
 
     handleCancelEdit()
   } catch (error) {
-    console.log(error?.response?.data?.message || "Failed to update comment")
+    toast.error(error?.response?.data?.message || "Failed to update comment")
+
   }
 }
 
@@ -104,7 +108,35 @@ const handleDeleteComment = async (commentId) => {
       prev.filter((comment) => comment._id !== commentId)
     )
   } catch (error) {
-    console.log(error?.response?.data?.message || "Failed to delete comment")
+    toast.error(error?.response?.data?.message || "Failed to delete comment")
+  }
+}
+const handleCommentLike = async (commentId) => {
+  if (!isAuthenticated) {
+    navigate("/login")
+    return
+  }
+
+  try {
+    const response = await toggleCommentLike(commentId)
+    const liked = response.data.data.liked
+
+    setComments((prev) =>
+      prev.map((comment) =>
+        comment._id === commentId
+          ? {
+              ...comment,
+              isLiked: liked,
+              likesCount: Math.max(
+                (comment.likesCount || 0) + (liked ? 1 : -1),
+                0
+              ),
+            }
+          : comment
+      )
+    )
+  } catch (error) {
+    console.log(error?.response?.data?.message || "Failed to like comment")
   }
 }
 
@@ -183,21 +215,38 @@ return (
           </p>
         )}
 
+        {!isEditing && (
+                      <div className="flex gap-3 mt-3">
+                        <button
+              onClick={() => handleCommentLike(comment._id)}
+              className={`flex items-center gap-2 px-4 py-2 hover:bg-gray-200  `}
+            >
+              <ThumbsUp className={`${comment.isLiked ? "text-blue-600" : ""}
+              `} size={18} />
+              {comment.likesCount || 0}
+
+            
+            </button>
+            </div>
+            )}
+
         {isOwner && !isEditing && (
           <div className="flex gap-2 mt-2">
             <button
               onClick={() => handleStartEdit(comment)}
-              className="text-sm text-gray-600 hover:text-black"
+              className="flex items-center gap-1 text-sm text-gray-600 hover:text-black"
             >
+              <Edit size={14} />
               Edit
             </button>
 
             <button
-              onClick={() => handleDeleteComment(comment._id)}
-              className="text-sm text-red-600 hover:text-red-700"
-            >
-              Delete
-            </button>
+                          onClick={() => handleDeleteComment(comment._id)}
+                          className="flex items-center gap-1 text-sm text-red-600 hover:text-red-700"
+                        >
+                          <Trash2 size={14} />
+                          Delete
+                        </button>
           </div>
         )}
       </div>

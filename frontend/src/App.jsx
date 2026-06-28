@@ -16,6 +16,11 @@ import WatchHistory from "./pages/WatchHistory.jsx"
 import LikedVideos from "./pages/LikedVideos.jsx"
 import Subscriptions from "./pages/Subscriptions.jsx"
 import ProfileSettings from "./pages/ProfileSettings.jsx"
+import Dashboard from "./pages/Dashboard.jsx"
+import Playlists from "./pages/Playlists.jsx"
+import Tweets from "./pages/Tweets.jsx"
+import WatchLater from "./pages/WatchLater.jsx"
+
 
 function App() {
    const dispatch = useDispatch()
@@ -88,6 +93,43 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/watch-later"
+          element={
+            <ProtectedRoute>
+              <WatchLater />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/playlists"
+          element={
+            <ProtectedRoute>
+              <Playlists />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+        path="/tweets"
+        element={
+          
+            <Tweets />
+          
+        }
+      />
+      <Route
+        path="/channel/:username/tweets"
+        element={<Tweets />}
+      />
+
       </Routes>
     </BrowserRouter>
   )

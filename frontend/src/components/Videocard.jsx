@@ -1,13 +1,28 @@
 import { useNavigate } from "react-router-dom"
+import { X } from "lucide-react"
+import { formatDuration } from "../utils/formatDuration.js"
 
-function VideoCard({ video }) {
+function VideoCard({ video, onRemove }) {
   const navigate = useNavigate()
 
   return (
     <div
       onClick={() => navigate(`/watch/${video._id}`)}
-      className="cursor-pointer group"
+      className="cursor-pointer group relative"
     >
+      {onRemove && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation()
+            onRemove(video._id)
+          }}
+          className="absolute top-2 right-2 z-10 p-1.5 bg-black/70 text-white rounded-full opacity-0 group-hover:opacity-100 hover:bg-red-600 transition-opacity"
+          title="Remove from playlist"
+        >
+          <X size={16} />
+        </button>
+      )}
       <div className="relative aspect-video bg-gray-200 rounded-xl overflow-hidden mb-3">
         <img
           src={video.thumbnail}
@@ -16,7 +31,7 @@ function VideoCard({ video }) {
         />
 
         <div className="absolute bottom-2 right-2 bg-black/80 text-white text-xs px-1.5 py-0.5 rounded">
-          {Math.round(video.duration || 0)}s
+          {formatDuration(video.duration)}
         </div>
       </div>
 

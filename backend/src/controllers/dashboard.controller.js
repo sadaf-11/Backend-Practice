@@ -76,7 +76,7 @@ const getChannelVideos = asyncHandler(async (req, res) => {
         throw new ApiError(400,"channel not found")
     }
     const channelVideos=await Video.find({owner:channelId})
-        .select("videoFile title thumbnail duration views owner")
+        .select("videoFile title thumbnail duration views owner isPublished")
         .lean()
     if(!channelVideos.length){
         throw new ApiError(400,"videos not found in this channel")

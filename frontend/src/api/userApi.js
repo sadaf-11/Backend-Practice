@@ -14,3 +14,7 @@ export const updateAvatar = (formData) => {
 export const updateCoverImage = (formData) => {
   return api.patch("/users/update-coverImage", formData)
 }
+
+export const changePassword=(data)=>{
+  return api.post("/users/change-password",data)
+}

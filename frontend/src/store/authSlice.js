@@ -1,5 +1,6 @@
 import { createSlice,createAsyncThunk } from "@reduxjs/toolkit";
 import {registerUser,loginUser,getCurrentUser,logoutUser} from "../api/authApi.js"
+import toast from "react-hot-toast"
 
 const initialState={
     user:null,
@@ -11,6 +12,7 @@ const initialState={
 export const login = createAsyncThunk("auth/login", async (data, thunkAPI) => {
   try {
     const response = await loginUser(data)
+    toast.success("Logged in successfully!")
     return response.data.data.user
   } catch (error) {
     return thunkAPI.rejectWithValue(
@@ -21,6 +23,7 @@ export const login = createAsyncThunk("auth/login", async (data, thunkAPI) => {
 export const register = createAsyncThunk("auth/register", async (formdata, thunkAPI) => {
   try {
     const response = await registerUser(formdata)
+    toast.success("Account created! Please sign in.")
     return response.data.data
   } catch (error) {
     return thunkAPI.rejectWithValue(

@@ -1,6 +1,7 @@
 import mongoose, {isValidObjectId} from "mongoose"
 import {Video} from "../models/video.models.js"
 import {User} from "../models/user.models.js"
+import {Like} from "../models/like.models.js"
 import ApiError from "../utils/ApiError.js"
 import {ApiResponse} from "../utils/ApiResponse.js"
 import asyncHandler from "../utils/asyncHandler.js"
@@ -109,15 +110,18 @@ const getVideoById = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Invalid Video Id")
     }
     //TODO: get video by id
-   const video = await Video.findById(videoId).populate(
-    "owner",
-    "fullname username avatar"
-   )
-    
+   const video = await Video.findByIdAndUpdate(
+    videoId,
+    {
+      $inc: { views: 1 },
+    },
+    {
+      returnDocument:"after"
+    }
+  ).populate("owner", "fullname username avatar")
         if(!video){
             throw new ApiError(400,"video not found!")
         }
-    
         if (req.user?._id) {
             await User.findByIdAndUpdate(
                 req.user._id,
@@ -128,11 +132,24 @@ const getVideoById = asyncHandler(async (req, res) => {
                 }
             )
         }
+
+        const [likesCount, userLike] = await Promise.all([
+            Like.countDocuments({ video: videoId }),
+            req.user?._id
+                ? Like.findOne({ video: videoId, likedBy: req.user._id })
+                : null,
+        ])
+
+        const videoWithLikes = {
+            ...video.toObject(),
+            likesCount,
+            isLiked: !!userLike,
+        }
     
         return res
         .status(200)
         .json(
-            new ApiResponse(200,video," videos fetched Successfully")
+            new ApiResponse(200, videoWithLikes, " videos fetched Successfully")
         ) 
 })
 

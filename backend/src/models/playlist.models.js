@@ -16,6 +16,10 @@ owner:{
 description:{
     type:String,
     required:true
+},
+isWatchLater:{
+    type:Boolean,
+    default:false
 }
 
 },{timestamps:true})
